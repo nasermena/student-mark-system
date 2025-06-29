@@ -12,7 +12,7 @@ func MainMenu(){
 
     for {
         fmt.Print(strings.Repeat("-", 40) + "\n")
-        fmt.Print("Main Menu (Choose a number):\n1- Show students list\n2- Add student\n3- Search student\n4- Delete student\n5- Edit student mark\n6- Exit\nEnter choice: ")
+        fmt.Print("Main Menu (Choose a number):\n1- Show students list\n2- Add student\n3- Search student\n4- Delete student\n5- Edit student mark\n6- Show summary report\n7- Exit\nEnter choice: ")
         var option string
         fmt.Scan(&option)
 
@@ -28,6 +28,8 @@ func MainMenu(){
         case "5":
             students.EditStudentMark(studentMarks)
         case "6":
+            students.PrintSummary(studentMarks)
+        case "7":
             fmt.Println("Exiting...")
             return
         default:
