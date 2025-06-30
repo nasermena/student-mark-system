@@ -7,7 +7,7 @@ import (
 
 func ShowStudents(studentMarks map[string]int){
 	if len(studentMarks) == 0{
-		fmt.Println("❌ Students list is empty.")
+		fmt.Printf("%s❌ Students list is empty.%s\n", Red, Reset)
 
 		}else{
 			keys := []string{}
@@ -16,7 +16,7 @@ func ShowStudents(studentMarks map[string]int){
 			}
 			
 			sort.Strings(keys)
-			fmt.Println("🎓 The students list:")
+			fmt.Printf("%s🎓 Students list:%s\n", Cyan, Reset)
 			for _, name:= range keys{
 				fmt.Printf("👨‍🎓 %s = %d\n", name, studentMarks[name])
 			}
@@ -64,7 +64,7 @@ func ShowStudents(studentMarks map[string]int){
 	failCount := len(studentMarks) - passCount
 
 	fmt.Println(strings.Repeat("=", 40))
-	fmt.Printf("📊 Students Summary Report\n")
+	fmt.Printf("%s📊 Students Summary Report%s\n", Cyan, Reset)
 	fmt.Println(strings.Repeat("-", 40))
 	fmt.Printf("👥 Total students: %d\n", len(studentMarks))
 	fmt.Printf("🎯 Highest mark: %d by %v\n", maxMark, topStudents)
@@ -72,5 +72,43 @@ func ShowStudents(studentMarks map[string]int){
 	fmt.Printf("📈 Average mark: %.2f\n", avg)
 	fmt.Printf("✅ Passed: %d student(s)\n", passCount)
 	fmt.Printf("❌ Failed: %d student(s)\n", failCount)
+	fmt.Println(strings.Repeat("=", 40))
+}
+
+
+func GradeDistribution(studentMarks map[string]int) {
+	if len(studentMarks) == 0 {
+		fmt.Println("❌ No student marks available.")
+		return
+	}
+
+	distribution := map[string]int{
+		"A (90-100)": 0,
+		"B (80-89)":  0,
+		"C (70-79)":  0,
+		"D (60-69)":  0,
+		"F (<60)":    0,
+	}
+
+	for _, mark := range studentMarks {
+		switch {
+		case mark >= 90:
+			distribution["A (90-100)"]++
+		case mark >= 80:
+			distribution["B (80-89)"]++
+		case mark >= 70:
+			distribution["C (70-79)"]++
+		case mark >= 60:
+			distribution["D (60-69)"]++
+		default:
+			distribution["F (<60)"]++
+		}
+	}
+
+	fmt.Println(strings.Repeat("=", 40))
+	fmt.Printf("%s📊 Grade Distribution:%s\n", Cyan, Reset)
+	for grade, count := range distribution {
+		fmt.Printf("%-12s: %d student(s)\n", grade, count)
+	}
 	fmt.Println(strings.Repeat("=", 40))
 }

@@ -2,102 +2,155 @@ package students
 
 import (
 	"fmt"
+	"bufio"
+	"strings"
+	"strconv"
+	"os"
 )
 
+// ANSI Colors
+const (
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Blue   = "\033[34m"
+	Cyan   = "\033[36m"
+	Reset  = "\033[0m"
+)
 
+func AddStudent(studentMarks map[string]int) {
+	scanner := bufio.NewScanner(os.Stdin)
+	_ = scanner.Scan() 
+	fmt.Printf("%s📥 Enter students as: Name/Grade (Type '0' to exit)%s\n", Cyan, Reset)
+	counter := 1
+	for {
+		fmt.Printf("- Student #%d: ",counter)
+		scanner.Scan()
+		line := strings.TrimSpace(scanner.Text())
 
-func AddStudent(studentMarks map[string]int){
-	var studentName string
-	var studentIndex  int
-	
-	for{
-		fmt.Printf("👨‍🎓 Please enter student name (%d) (enter 0 to exit): ", studentIndex +1)
-		fmt.Scan(&studentName)
-		
-		if _, exists := studentMarks[studentName]; exists {
-			fmt.Printf("⚠️ %s already exists. Please enter a new name.\n", studentName)
+		if line == "0" {
+			break
+		}
+
+		parts := strings.Split(line, "/")
+		if len(parts) != 2 {
+			fmt.Printf("%s❌ Invalid format. Use: Name/Grade%s\n",Red, Reset)
 			continue
 		}
 
-		
-		if studentName == "0"{
-			break
-		}
-		for{
-			var studentMark int
+		name := strings.TrimSpace(parts[0])
+		markStr := strings.TrimSpace(parts[1])
 
-			fmt.Printf("🔖 Enter the mark for (%s) (1-100) = ", studentName)
-			fmt.Scan(&studentMark)
-			
-			validMark, err := validateMark(studentMark)
-
-			if err != nil {
-				fmt.Println("🔢 Please enter valid input (number 1-100)")
-				}else{
-					studentMarks[studentName] = validMark
-					fmt.Printf("✅ Done, %s was added\n", studentName)
-					studentIndex++
-					break
-				}
-			}
+		mark, err := strconv.Atoi(markStr)
+		if err != nil {
+			fmt.Printf("%s❌ Invalid mark. Please enter a number.%s\n", Red, Reset)
+			continue
 		}
+
+		validMark, err := ValidateMark(mark)
+		if err != nil {
+			fmt.Printf("%s🔢 Invalid range. Enter a number between 1-100.%s\n", Red, Reset)
+			continue
+		}
+
+		if _, exists := studentMarks[name]; exists {
+			fmt.Printf("%s⚠️ %s already exists. Skipping.%s\n", Yellow, name, Reset)
+			continue
+		}
+
+		studentMarks[name] = validMark
+		fmt.Printf("%s✅ %s was added successfully.%s\n", Green, name, Reset)
+		counter++
 	}
+}
 
 func SearchStudent(studentMarks map[string]int){
-
-	var searchName string
+	scanner := bufio.NewScanner(os.Stdin)
+	_ = scanner.Scan() 
 	fmt.Print("🔍 Search for a student: ")
-	fmt.Scan(&searchName)
+	scanner.Scan()
+	searchName := strings.TrimSpace(scanner.Text())
 	
 	mark, exists := studentMarks[searchName]
 	if exists{
-		fmt.Printf("✅ Found!, %s got %d.\n", searchName, mark)
+		fmt.Printf("%s✅ Found! %s got %d.%s\n", Green, searchName, mark, Reset)
 		}else{
-			fmt.Printf("❌ %s not found.\n", searchName)
+			fmt.Printf("%s❌ %s not found.%s\n", Red, searchName, Reset)
 		}
 	}
 
 
-func DeleteStudent(studentMarks map[string]int){
-	var searchName string
+func DeleteStudent(studentMarks map[string]int) {
+	scanner := bufio.NewScanner(os.Stdin)
+	_ = scanner.Scan() 
 	fmt.Print("🗑️ Enter a student to delete: ")
-	fmt.Scan(&searchName)
+	scanner.Scan()
+	searchName := strings.TrimSpace(scanner.Text())
 
-	_, exists := studentMarks[searchName]
-	if exists{
-		delete(studentMarks, searchName)
-		fmt.Printf("✅ Done, %s was deleted.\n", searchName)
-		}else{
-			fmt.Printf("❌%s not found.\n", searchName)
+	if _, exists := studentMarks[searchName]; exists {
+		fmt.Printf("⚠️ Are you sure you want to delete %s? (y/n): ", searchName)
+		scanner.Scan()
+		confirm := strings.ToLower(strings.TrimSpace(scanner.Text()))
+		if confirm == "y" {
+			delete(studentMarks, searchName)
+			fmt.Printf("%s✅ %s was deleted successfully.%s\n", Green, searchName, Reset)
+		} else {
+			fmt.Printf("%sℹ️ Operation canceled.%s\n", Yellow, Reset)
 		}
+	} else {
+		fmt.Printf("%s❌ %s not found.%s\n", Red, searchName, Reset)
 	}
+}
 			
-func EditStudentMark(studentMarks map[string]int){
-	var searchName string
-	var newMark int
-	
-	fmt.Print("👨‍🎓 Enter the student's name to edit his mark: ")
-	fmt.Scan(&searchName)
-	oldMark, exists := studentMarks[searchName]
 
-	if exists{
-		for {
-			fmt.Printf("🔖 The old mark = %d, renter the new mark: ", oldMark)
-			fmt.Scan(&newMark)
 
-			validMark, err := validateMark(newMark)
+func EditStudentMark(studentMarks map[string]int) {
+	scanner := bufio.NewScanner(os.Stdin)
+	_ = scanner.Scan() 
 
-			if err != nil{
-				fmt.Println("🔢 Please enter valid input (number 1-100)")
-			}else{
-				studentMarks[searchName] = validMark
-				fmt.Printf("✅ %s's mark has been updated successfully.\n", searchName)
-				break
-			}
-		}
-		}else{
-			fmt.Printf("❌ %s not found.\n", searchName)
-		}
+	fmt.Print("👨‍🎓 Enter the student's name to edit the mark: ")
+
+	scanner.Scan()
+	name := strings.TrimSpace(scanner.Text())
+
+	oldMark, exists := studentMarks[name]
+	if !exists {
+		fmt.Printf("%s❌ %s not found.%s\n", Red, name, Reset)
+		return
 	}
+
+	fmt.Printf("%s✏️  Current mark for %s is: %d%s\n", Blue, name, oldMark, Reset)
+
+	fmt.Print("⚠️  Are you sure you want to update the mark? (y/n): ")
+	// _ = scanner.Scan() 
+	scanner.Scan()
+	confirm := strings.ToLower(strings.TrimSpace(scanner.Text()))
+	if confirm != "y" {
+		fmt.Printf("%sℹ️  Operation canceled.%s\n", Yellow, Reset)
+		return
+	}
+
+	for {
+		fmt.Print("🔖 Enter the new mark (1-100): ")
+		scanner.Scan()
+		markStr := strings.TrimSpace(scanner.Text())
+
+		newMark, err := strconv.Atoi(markStr)
+		if err != nil {
+			fmt.Printf("%s❌ Invalid input. Please enter a number.%s\n", Red, Reset)
+			continue
+		}
+
+		validMark, err := ValidateMark(newMark)
+		if err != nil {
+			fmt.Printf("%s🔢 Invalid range. Enter a number between 1-100.%s\n", Red, Reset)
+			continue
+		}
+
+		studentMarks[name] = validMark
+		fmt.Printf("%s✅ %s's mark has been updated successfully to %d.%s\n", Green, name, validMark, Reset)
+		break
+	}
+}
 
 

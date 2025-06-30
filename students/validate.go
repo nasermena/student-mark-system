@@ -2,7 +2,7 @@ package students
 
 import "fmt"
 
-func validateMark(input int) (int, error) {
+func ValidateMark(input int) (int, error) {
 	if input >= 1 && input <= 100 {
 		return input, nil
 	}
