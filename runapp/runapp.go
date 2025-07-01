@@ -4,7 +4,10 @@ import (
     "student-mark-system/students"
     "fmt"
     "strings"
+    "bufio"
+    "os"
 )
+
 // ANSI Colors
 const (
 	Red    = "\033[31m"
@@ -20,26 +23,33 @@ func MainMenu(){
     studentMarks := make(map[string]int)
 
     for {
+        scanner := bufio.NewScanner(os.Stdin)        
         fmt.Print(strings.Repeat("-", 40) + "\n")
-        fmt.Print("Main Menu (Choose a number):\n1- Show students list\n2- Add student\n3- Search student\n4- Delete student\n5- Edit student mark\n6- Show summary report\n7- Show grade distribution\n8- Exit\nEnter choice: ")
-        var option string
-        fmt.Scan(&option)
+        fmt.Print("Main Menu (Choose a number):\n1- Students list\n2- Import students from file\n3- Add student\n4- Search student\n5- Delete student\n6- Edit student mark\n7- Summary report\n8- Grade overviewn\n9- Exit\nEnter choice: ")
+        scanner.Scan()
+        option := scanner.Text() 
         switch option {
         case "1":			
            students.ShowStudents(studentMarks)
         case "2":
-            students.AddStudent(studentMarks)
+            scanner := bufio.NewScanner(os.Stdin)
+            fmt.Print("Enter File Name: ")
+            scanner.Scan()
+            filename := strings.TrimSpace(scanner.Text())
+	        students.ImportStudentsFromFile(filename, studentMarks)
         case "3":
-           students.SearchStudent(studentMarks)
+            students.AddStudent(studentMarks)
         case "4":
-            students.DeleteStudent(studentMarks)
+           students.SearchStudent(studentMarks)
         case "5":
-            students.EditStudentMark(studentMarks)
+            students.DeleteStudent(studentMarks)
         case "6":
-            students.PrintSummary(studentMarks)
+            students.EditStudentMark(studentMarks)
         case "7":
-            students.GradeDistribution(studentMarks)
+            students.PrintSummary(studentMarks)
         case "8":
+            students.GradeOverview(studentMarks)
+        case "9":
             fmt.Println("Exiting...")
             return
         default:

@@ -1,0 +1,18 @@
+Alice,90
+ ,85
+John,
+Sophia85
+,
+Emma
+,72
+"Michael, Jr.",88
+Daniel,ninety
+Lily,-5
+James,150
+Grace , 80
+Emily,@95
+Matthew, 75
+Logan,
+  ,  ,
+                      
+Olivia,67

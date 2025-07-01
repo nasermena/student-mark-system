@@ -16,11 +16,13 @@ func ShowStudents(studentMarks map[string]int){
 			}
 			
 			sort.Strings(keys)
+			fmt.Println(strings.Repeat("=", 40))
 			fmt.Printf("%s🎓 Students list:%s\n", Cyan, Reset)
 			for _, name:= range keys{
-				fmt.Printf("👨‍🎓 %s = %d\n", name, studentMarks[name])
+				fmt.Printf("👨‍🎓 %-12s : %d\n", name, studentMarks[name])
 			}
 		}
+		fmt.Println(strings.Repeat("=", 40))
 	}
 
 	func PrintSummary(studentMarks map[string]int) {
@@ -76,39 +78,54 @@ func ShowStudents(studentMarks map[string]int){
 }
 
 
-func GradeDistribution(studentMarks map[string]int) {
+func GradeOverview(studentMarks map[string]int) {
 	if len(studentMarks) == 0 {
 		fmt.Println("❌ No student marks available.")
 		return
 	}
+	fmt.Println(strings.Repeat("=", 40))
+	fmt.Printf("📄%s Grade Overview:%s\n", Cyan, Reset)
+	fmt.Println(strings.Repeat("=", 40))
 
 	distribution := map[string]int{
-		"A (90-100)": 0,
-		"B (80-89)":  0,
-		"C (70-79)":  0,
-		"D (60-69)":  0,
-		"F (<60)":    0,
+		"A+ (90-100) 🎖️": 0,
+		"A (80-89) 🥇":    0,
+		"B (70-79) 🥈":    0,
+		"C (60-69) 🥉":    0,
+		"D (50-59) ✅":    0,
+		"F (0-49) ❌":     0,
 	}
 
-	for _, mark := range studentMarks {
+	fmt.Printf("📄%s Grade Classification per Student:%s\n", Cyan, Reset)
+	fmt.Println(strings.Repeat("-", 40))
+
+	for name, mark := range studentMarks {
+		var grade string
 		switch {
 		case mark >= 90:
-			distribution["A (90-100)"]++
+			grade = "A+ (90-100) 🎖️"
 		case mark >= 80:
-			distribution["B (80-89)"]++
+			grade = "A (80-89) 🥇"
 		case mark >= 70:
-			distribution["C (70-79)"]++
+			grade = "B (70-79) 🥈"
 		case mark >= 60:
-			distribution["D (60-69)"]++
+			grade = "C (60-69) 🥉"
+		case mark >= 50:
+			grade = "D (50-59) ✅"
 		default:
-			distribution["F (<60)"]++
+			grade = "F (0-49) ❌"
 		}
+
+		distribution[grade]++
+		fmt.Printf("👨‍🎓 %-15s → %3d (%s)\n", name, mark, grade)
 	}
 
 	fmt.Println(strings.Repeat("=", 40))
-	fmt.Printf("%s📊 Grade Distribution:%s\n", Cyan, Reset)
-	for grade, count := range distribution {
-		fmt.Printf("%-12s: %d student(s)\n", grade, count)
+	fmt.Printf("%s📊 Grade Distribution Summary:%s\n", Cyan, Reset)
+	fmt.Println(strings.Repeat("-", 40))
+
+	for category, count := range distribution {
+		fmt.Printf("%-20s : %d student(s)\n", category, count)
 	}
 	fmt.Println(strings.Repeat("=", 40))
 }
