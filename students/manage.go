@@ -33,7 +33,7 @@ func AddStudent(studentMarks map[string]int) {
 		}
 
 		parts := strings.Split(line, "/")
-		if len(parts) != 2 {
+		if len(parts) != 2 || !ValidateName(parts[0]){
 			fmt.Printf("%s❌ Invalid format. Use: Name/Grade%s\n",Red, Reset)
 			continue
 		}
@@ -78,7 +78,6 @@ func SearchStudent(studentMarks map[string]int){
 		}
 	}
 
-
 func DeleteStudent(studentMarks map[string]int) {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("🗑️ Enter a student to delete: ")
@@ -99,8 +98,6 @@ func DeleteStudent(studentMarks map[string]int) {
 		fmt.Printf("%s❌ %s not found.%s\n", Red, searchName, Reset)
 	}
 }
-			
-
 
 func EditStudentMark(studentMarks map[string]int) {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -147,70 +144,4 @@ func EditStudentMark(studentMarks map[string]int) {
 		fmt.Printf("%s✅ %s's mark has been updated successfully to %d.%s\n", Green, name, validMark, Reset)
 		break
 	}
-}
-
-
-func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Printf("❌ Failed to open file: %v\n", err)
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	lineNumber := 1
-	added := 0
-	skipped := 0
-
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" {
-			lineNumber++
-			continue
-		}
-
-		parts := strings.Split(line, ",")
-		if len(parts) != 2 {
-			fmt.Printf("⚠️ Line %d ignored (invalid format): %s\n", lineNumber, line)
-			skipped++
-			lineNumber++
-			continue
-		}
-
-		name := strings.TrimSpace(parts[0])
-		markStr := strings.TrimSpace(parts[1])
-		mark, err := strconv.Atoi(markStr)
-		if err != nil {
-			fmt.Printf("⚠️ Line %d ignored (invalid mark): %s\n", lineNumber, markStr)
-			skipped++
-			lineNumber++
-			continue
-		}
-
-		validMark, err := ValidateMark(mark)
-		if err != nil {
-			fmt.Printf("⚠️ Line %d ignored (mark out of range): %d\n", lineNumber, mark)
-			skipped++
-			lineNumber++
-			continue
-		}
-
-		if _, exists := studentMarks[name]; exists {
-			fmt.Printf("⚠️ %s already exists. Skipping.\n", name)
-			skipped++
-		} else {
-			studentMarks[name] = validMark
-			added++
-		}
-
-		lineNumber++
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Printf("❌ Error reading file: %v\n", err)
-		return
-	}
-
-	fmt.Printf("✅ Import complete. %d added, %d skipped.\n", added, skipped)
 }

@@ -16,3 +16,14 @@ Logan,
   ,  ,
                       
 Olivia,67
+ Anna Marie,85
+ O'Reilly,88
+ Jean-Luc,91
+ Drake!,73
+ Chloe,89.5
+ "Isabella",93
+ "Emily", "87"
+ Alice,85
+ Mark,1e2
+ 🧑‍🎓,85  
+ Zara,88,5
