@@ -7,16 +7,7 @@ import (
 	"strings"
 	"student-mark-system/data"
 	"student-mark-system/students"
-)
-
-// ANSI Colors
-const (
-	Red    = "\033[31m"
-	Green  = "\033[32m"
-	Yellow = "\033[33m"
-	Blue   = "\033[34m"
-	Cyan   = "\033[36m"
-	Reset  = "\033[0m"
+    "student-mark-system/colors"
 )
 
 func MainMenu(){
@@ -52,7 +43,7 @@ func MainMenu(){
             students.GradeOverview(studentMarks)
         case "9":
             if len(studentMarks) == 0 {
-                fmt.Printf("❌%sNo data to export%s\n", Red, Reset)
+                fmt.Printf("❌%sNo data to export%s\n", colors.Red, colors.Reset)
             }else {
                 fmt.Print("Enter filename to export as CSV: ")
                 scanner.Scan()
@@ -62,7 +53,7 @@ func MainMenu(){
             }
         case "10":
             if len(studentMarks) == 0 {
-                fmt.Printf("❌%s No data to export.%s\n", Red, Reset)
+                fmt.Printf("❌%s No data to export.%s\n", colors.Red, colors.Reset)
             }else {
                 fmt.Print("Enter filename to export as JSON: ")
                 scanner.Scan()
@@ -74,7 +65,7 @@ func MainMenu(){
             fmt.Println("Exiting...")
             return
         default:
-            fmt.Printf("%sInvalid option. Try again.%s\n", Red, Reset)
+            fmt.Printf("%sInvalid option. Try again.%s\n", colors.Red, colors.Reset)
         }
     }
 }

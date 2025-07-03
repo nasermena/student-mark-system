@@ -9,22 +9,15 @@ import (
 	"student-mark-system/students"
 	"encoding/csv"
 	"encoding/json"
+	"student-mark-system/colors"
 	
 )
 
-// ANSI Colors
-const (
-	Green = "\033[32m"
-	Red   = "\033[31m"
-	Reset = "\033[0m"
-	Yellow = "\033[33m"
-
-)
 
 func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 	file, err := os.Open(filename)
 	if err != nil {
-		fmt.Printf("❌ %sFailed to open file: %v%s\n", Red, err, Reset)
+		fmt.Printf("❌ %sFailed to open file: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 	defer file.Close()
@@ -44,7 +37,7 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 		parts := strings.Split(line, ",")
 
 		if len(parts) != 2 || parts[0] == "" || !students.ValidateName(parts[0]) {
-			fmt.Printf("⚠️ %sLine %d ignored (invalid format): %s%s\n", Yellow, lineNumber, line, Reset)
+			fmt.Printf("⚠️ %sLine %d ignored (invalid format): %s%s\n", colors.Yellow, lineNumber, line, colors.Reset)
 			skipped++
 			lineNumber++
 			continue
@@ -54,7 +47,7 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 		markStr := strings.TrimSpace(parts[1])
 		mark, err := strconv.Atoi(markStr)
 		if err != nil {
-			fmt.Printf("⚠️ %sLine %d ignored (invalid mark): %s%s\n", Yellow, lineNumber, markStr, Reset)
+			fmt.Printf("⚠️ %sLine %d ignored (invalid mark): %s%s\n", colors.Yellow, lineNumber, markStr, colors.Reset)
 			skipped++
 			lineNumber++
 			continue
@@ -62,14 +55,14 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 
 		validMark, err := students.ValidateMark(mark)
 		if err != nil {
-			fmt.Printf("⚠️ %sLine %d ignored (mark out of range): %d%s\n", Yellow, lineNumber, mark, Reset)
+			fmt.Printf("⚠️ %sLine %d ignored (mark out of range): %d%s\n", colors.Yellow, lineNumber, mark, colors.Reset)
 			skipped++
 			lineNumber++
 			continue
 		}
 
 		if _, exists := studentMarks[name]; exists {
-			fmt.Printf("⚠️ %s%s already exists. Skipping.%s\n", Yellow, name, Reset)
+			fmt.Printf("⚠️ %s%s already exists. Skipping.%s\n", colors.Yellow, name, colors.Reset)
 			skipped++
 		} else {
 			studentMarks[name] = validMark
@@ -80,11 +73,11 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("❌ %sError reading file: %v%s\n", err, Red, Reset)
+		fmt.Printf("❌ %sError reading file: %v%s\n", err, colors.Red, colors.Reset)
 		return
 	}
 
-	fmt.Printf("✅ %sImport complete. %d added, %d skipped.%s\n", Green, added, skipped, Reset)
+	fmt.Printf("✅ %sImport complete. %d added, %d skipped.%s\n", colors.Green, added, skipped, colors.Reset)
 }
 
 // ExportToCSV writes the student marks to a CSV file
@@ -95,7 +88,7 @@ func ExportToCSV(filename string, studentMarks map[string]int) {
 	file, err := os.Create(fullPath)
 
 	if err != nil {
-		fmt.Printf("%s❌ Could not create file: %v%s\n", Red, err, Reset)
+		fmt.Printf("%s❌ Could not create file: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 	defer file.Close()
@@ -108,11 +101,11 @@ func ExportToCSV(filename string, studentMarks map[string]int) {
 	for name, mark := range studentMarks {
 		record := []string{name, fmt.Sprintf("%d", mark)}
 		if err := writer.Write(record); err != nil {
-			fmt.Printf("%s❌ Failed to write record: %v%s\n", Red, err, Reset)
+			fmt.Printf("%s❌ Failed to write record: %v%s\n", colors.Red, err, colors.Reset)
 		}
 	}
 
-	fmt.Printf("%s✅ Exported %d students to CSV file: %s%s\n", Green, len(studentMarks), filename, Reset)
+	fmt.Printf("%s✅ Exported %d students to CSV file: %s%s\n", colors.Green, len(studentMarks), filename, colors.Reset)
 }
 
 // ExportToJSON writes the student marks to a JSON file
@@ -121,7 +114,7 @@ func ExportToJSON(filename string, studentMarks map[string]int) {
 	file, err := os.Create(fullPath)
 
 	if err != nil {
-		fmt.Printf("%s❌ Could not create file: %v%s\n", Red, err, Reset)
+		fmt.Printf("%s❌ Could not create file: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 	defer file.Close()
@@ -130,9 +123,9 @@ func ExportToJSON(filename string, studentMarks map[string]int) {
 	encoder.SetIndent("", "  ")
 
 	if err := encoder.Encode(studentMarks); err != nil {
-		fmt.Printf("%s❌ Failed to encode JSON: %v%s\n", Red, err, Reset)
+		fmt.Printf("%s❌ Failed to encode JSON: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 
-	fmt.Printf("%s✅ Exported %d students to JSON file: %s%s\n", Green, len(studentMarks), filename, Reset)
+	fmt.Printf("%s✅ Exported %d students to JSON file: %s%s\n", colors.Green, len(studentMarks), filename, colors.Reset)
 }
