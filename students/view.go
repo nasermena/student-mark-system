@@ -29,7 +29,7 @@ func ShowStudents(studentMarks map[string]int){
 
 func PrintSummary(studentMarks map[string]int) {
 	if len(studentMarks) == 0 {
-		fmt.Println("❌ No students to summarize.")
+		fmt.Printf("❌ %sNo students to summarize.%s", colors.Red, colors.Reset)
 		return
 	}
 
@@ -86,7 +86,7 @@ func PrintSummary(studentMarks map[string]int) {
 
 func GradeOverview(studentMarks map[string]int) {
 	if len(studentMarks) == 0 {
-		fmt.Println("❌ No student marks available.")
+		fmt.Printf("%s❌ No student marks available.%s\n", colors.Red, colors.Reset)
 		return
 	}
 	fmt.Println(strings.Repeat("=", 40))
@@ -122,7 +122,7 @@ func GradeOverview(studentMarks map[string]int) {
 			grade = "F (0-49) ❌"
 		}
 
-		distribution[grade]++
+		distribution[grade]++ 
 		fmt.Printf("👨‍🎓 %-15s → %3d (%s)\n", name, mark, grade)
 	}
 
@@ -130,8 +130,18 @@ func GradeOverview(studentMarks map[string]int) {
 	fmt.Printf("%s📊 Grade Distribution Summary:%s\n", colors.Cyan, colors.Reset)
 	fmt.Println(strings.Repeat("-", 40))
 
-	for category, count := range distribution {
-		fmt.Printf("%-20s : %d student(s)\n", category, count)
+	orderedGrades := []string{
+		"A+ (90-100) 🎖️",
+		"A (80-89) 🥇",
+		"B (70-79) 🥈",
+		"C (60-69) 🥉",
+		"D (50-59) ✅",
+		"F (0-49) ❌",
+	}
+
+	for _, grade := range orderedGrades {
+		count := distribution[grade]
+		fmt.Printf("%-20s : %d student(s)\n", grade, count)
 	}
 	fmt.Println(strings.Repeat("=", 40))
 }
