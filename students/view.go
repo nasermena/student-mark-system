@@ -10,26 +10,26 @@ import (
 func ShowStudents(studentMarks map[string]int){
 	if len(studentMarks) == 0{
 		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
-
-		}else{
-			keys := []string{}
-			for k := range studentMarks {
-				keys = append(keys, k)
-			}
-			
-			sort.Strings(keys)
-			fmt.Println(strings.Repeat("=", 40))
-			fmt.Printf("%s🎓 Students list:%s\n", colors.Cyan, colors.Reset)
-			for _, name:= range keys{
-				fmt.Printf("👨‍🎓 %-12s : %d\n", name, studentMarks[name])
-			}
+		return
+	}
+		keys := []string{}
+		for k := range studentMarks {
+			keys = append(keys, k)
 		}
+		
+		sort.Strings(keys)
+		fmt.Println(strings.Repeat("=", 40))
+		fmt.Printf("%s🎓 Students list:%s\n", colors.Cyan, colors.Reset)
+		for _, name:= range keys{
+			fmt.Printf("👨‍🎓 %-12s : %d\n", name, studentMarks[name])
+		}
+		
 		fmt.Println(strings.Repeat("=", 40))
 	}
 
 func PrintSummary(studentMarks map[string]int) {
 	if len(studentMarks) == 0 {
-		fmt.Printf("❌ %sNo students to summarize.%s", colors.Red, colors.Reset)
+		fmt.Printf("❌ %sNo students to summarize.%s\n", colors.Red, colors.Reset)
 		return
 	}
 

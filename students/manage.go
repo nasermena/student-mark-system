@@ -56,6 +56,10 @@ func AddStudent(studentMarks map[string]int) {
 }
 
 func SearchStudent(studentMarks map[string]int){
+	if len(studentMarks) == 0{
+		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		return
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("🔍 Search for a student: ")
 	scanner.Scan()
@@ -70,6 +74,10 @@ func SearchStudent(studentMarks map[string]int){
 	}
 
 func DeleteStudent(studentMarks map[string]int) {
+	if len(studentMarks) == 0{
+		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		return
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Print("🗑️ Enter a student to delete: ")
 	scanner.Scan()
@@ -91,6 +99,10 @@ func DeleteStudent(studentMarks map[string]int) {
 }
 
 func EditStudentMark(studentMarks map[string]int) {
+	if len(studentMarks) == 0{
+		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		return
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Print("👨‍🎓 Enter the student's name to edit the mark: ")
