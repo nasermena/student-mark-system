@@ -25,7 +25,7 @@ func (s *StudentManager) AddInteractive() {
 
 		parts := strings.Split(line, "/")
 		if len(parts) != 2 || !ValidateName(parts[0]){
-			fmt.Printf("%s❌ Invalid format. Use: Name/Grade%s\n",colors.Red, colors.Reset)
+			colors.Error("Invalid format. Use: Name/Grade")
 			continue
 		}
 
@@ -34,30 +34,30 @@ func (s *StudentManager) AddInteractive() {
 
 		mark, err := strconv.Atoi(markStr)
 		if err != nil {
-			fmt.Printf("%s❌ Invalid mark. Please enter a number.%s\n", colors.Red, colors.Reset)
+			colors.Error("Invalid mark. Please enter a number.")
 			continue
 		}
 		
 		validMark, err := ValidateMark(mark)
 		if err != nil {
-			fmt.Printf("%s🔢 Invalid range. Enter a number between 1-100.%s\n", colors.Red, colors.Reset)
+			colors.Error("Invalid range. Enter a number between 1-100.")
 			continue
 		}
 
 		if _, exists := s.Students[name]; exists {
-			fmt.Printf("%s⚠️ %s already exists. Skipping.%s\n", colors.Yellow, name, colors.Reset)
+			colors.Warning("already exists. Skipping.\n")
 			continue
 		}
 
 		s.Students[name] = Student{Name: name, Mark: validMark}
-		fmt.Printf("%s✅ %s was added successfully.%s\n", colors.Green, name, colors.Reset)
+		colors.Success(fmt.Sprintf("%s was added successfully.", name))
 		counter++
 	}
 }
 
 func (s *StudentManager) SearchInteractive(){
 	if len(s.Students) == 0{
-		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		colors.Error("Students list is empty.")
 		return
 	}
 	scanner := bufio.NewScanner(os.Stdin)
@@ -67,15 +67,15 @@ func (s *StudentManager) SearchInteractive(){
 	
 	student, exists := s.Students[searchName]
 	if exists{
-		fmt.Printf("%s✅ Found! %s got %d.%s\n", colors.Green, searchName, student.Mark, colors.Reset)
+		colors.Success(fmt.Sprintf("Found! %s got %d.", searchName, student.Mark))
 		}else{
-			fmt.Printf("%s❌ %s not found.%s\n", colors.Red, searchName, colors.Reset)
+			colors.Error(fmt.Sprintf("%s not found", searchName))
 		}
 	}
 
 func (s *StudentManager) DeleteInteractive(){
 	if len(s.Students) == 0{
-		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		colors.Error("Students list is empty.")
 		return
 	}
 	scanner := bufio.NewScanner(os.Stdin)
@@ -84,23 +84,23 @@ func (s *StudentManager) DeleteInteractive(){
 	searchName := strings.TrimSpace(scanner.Text())
 
 	if _, exists := s.Students[searchName]; exists {
-		fmt.Printf("⚠️ Are you sure you want to delete %s? (y/n): ", searchName)
+		colors.Warning(fmt.Sprintf("Are you sure you want to delete %s? (y/n): ", searchName))
 		scanner.Scan()
 		confirm := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		if confirm == "y" {
 			delete(s.Students, searchName)
-			fmt.Printf("%s✅ %s was deleted successfully.%s\n", colors.Green, searchName, colors.Reset)
+			colors.Success(fmt.Sprintf("%s was deleted successfully.", searchName))
 		} else {
-			fmt.Printf("%sℹ️ Operation canceled.%s\n", colors.Yellow, colors.Reset)
+			colors.Warning("Operation canceled.\n")
 		}
 	} else {
-		fmt.Printf("%s❌ %s not found.%s\n", colors.Red, searchName, colors.Reset)
+		colors.Error(fmt.Sprintf("%s not found.", searchName))
 	}
 }
 
 func (s *StudentManager) EditMarkInteractive(){
 	if len(s.Students) == 0{
-		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		colors.Error("Students list is empty.")
 		return
 	}
 	scanner := bufio.NewScanner(os.Stdin)
@@ -112,17 +112,17 @@ func (s *StudentManager) EditMarkInteractive(){
 
 	studentOldMark, exists := s.Students[name]
 	if !exists {
-		fmt.Printf("%s❌ %s not found.%s\n", colors.Red, name, colors.Reset)
+		colors.Error(fmt.Sprintf(" %s not found.", name))
 		return
 	}
 
 	fmt.Printf("%s✏️  Current mark for %s is: %d%s\n", colors.Blue, name, studentOldMark.Mark, colors.Reset)
 
-	fmt.Print("⚠️  Are you sure you want to update the mark? (y/n): ")
+	colors.Warning("Are you sure you want to update the mark? (y/n): ")
 	scanner.Scan()
 	confirm := strings.ToLower(strings.TrimSpace(scanner.Text()))
 	if confirm != "y" {
-		fmt.Printf("%sℹ️  Operation canceled.%s\n", colors.Yellow, colors.Reset)
+		colors.Warning("Operation canceled.\n")
 		return
 	}
 
@@ -133,18 +133,18 @@ func (s *StudentManager) EditMarkInteractive(){
 
 		newMark, err := strconv.Atoi(markStr)
 		if err != nil {
-			fmt.Printf("%s❌ Invalid input. Please enter a number.%s\n", colors.Red, colors.Reset)
+			colors.Error("Invalid input. Please enter a number.")
 			continue
 		}
 
 		validMark, err := ValidateMark(newMark)
 		if err != nil {
-			fmt.Printf("%s🔢 Invalid range. Enter a number between 1-100.%s\n", colors.Red, colors.Reset)
+			colors.Error("Invalid range. Enter a number between 1-100.")
 			continue
 		}
 		
 		s.Students[name] = Student{Name: name, Mark: validMark}
-		fmt.Printf("%s✅ %s's mark has been updated successfully to %d.%s\n", colors.Green, name, validMark, colors.Reset)
+		colors.Success(fmt.Sprintf(" %s's mark has been updated successfully to %d.", name, validMark))
 		break
 	}
 }

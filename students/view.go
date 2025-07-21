@@ -9,7 +9,7 @@ import (
 
 func (s *StudentManager) ShowAll(){
 	if len(s.Students) == 0{
-		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
+		colors.Error("Students list is empty.")
 		return
 	}
 		keys := []string{}
@@ -19,7 +19,7 @@ func (s *StudentManager) ShowAll(){
 		
 		sort.Strings(keys)
 		fmt.Println(strings.Repeat("=", 40))
-		fmt.Printf("%s🎓 Students list:%s\n", colors.Cyan, colors.Reset)
+		colors.Info("Students list:")
 		for _, name:= range keys{
 			fmt.Printf("👨‍🎓 %-12s : %d\n", name, s.Students[name].Mark)
 		}
@@ -29,7 +29,7 @@ func (s *StudentManager) ShowAll(){
 
 func (s *StudentManager) PrintSummary() {
 	if len(s.Students) == 0 {
-		fmt.Printf("❌ %sNo students to summarize.%s\n", colors.Red, colors.Reset)
+		colors.Error("No students to summarize.")
 		return
 	}
 
@@ -69,7 +69,7 @@ func (s *StudentManager) PrintSummary() {
 	failCount := len(s.Students) - passCount
 
 	fmt.Println(strings.Repeat("=", 40))
-	fmt.Printf("%s📊 Students Summary Report%s\n", colors.Cyan, colors.Reset)
+	colors.Info("Students Summary Report")
 	fmt.Println(strings.Repeat("-", 40))
 	fmt.Printf("👥 Total students: %d\n", len(s.Students))
 	fmt.Printf("🎯 Highest mark: %d by %v\n", maxMark, topStudents)
@@ -78,7 +78,7 @@ func (s *StudentManager) PrintSummary() {
 	fmt.Printf("✅ Passed: %d student(s)\n", passCount)
 	fmt.Printf("❌ Failed: %d student(s)\n", failCount)
 	fmt.Println(strings.Repeat("-", 40))
-	fmt.Printf("%s📊 Advanced Statistics:%s\n", colors.Cyan, colors.Reset)
+	colors.Info("Advanced Statistics:")
 	s.ComputeAdvancedStats()
 	fmt.Println(strings.Repeat("=", 40))
 }
@@ -89,7 +89,7 @@ func (s *StudentManager) GradeOverview() {
 		return
 	}
 	fmt.Println(strings.Repeat("=", 40))
-	fmt.Printf("📄%s Grade Overview:%s\n", colors.Cyan, colors.Reset)
+	colors.Info("Grade Overview:")
 	fmt.Println(strings.Repeat("=", 40))
 
 	distribution := map[string]int{
@@ -101,7 +101,7 @@ func (s *StudentManager) GradeOverview() {
 		"F (0-49) ❌":     0,
 	}
 
-	fmt.Printf("📄%s Grade Classification per Student:%s\n", colors.Cyan, colors.Reset)
+	colors.Info("Grade Classification per Student:")
 	fmt.Println(strings.Repeat("-", 40))
 
 	for name, student := range s.Students {
@@ -127,7 +127,7 @@ func (s *StudentManager) GradeOverview() {
 	}
 
 	fmt.Println(strings.Repeat("=", 40))
-	fmt.Printf("%s📊 Grade Distribution Summary:%s\n", colors.Cyan, colors.Reset)
+	colors.Info("Grade Distribution Summary:")
 	fmt.Println(strings.Repeat("-", 40))
 
 	orderedGrades := []string{
@@ -149,7 +149,7 @@ func (s *StudentManager) GradeOverview() {
 // ComputeAdvancedStats calculates and displays advanced statistical metrics
 func (s *StudentManager) ComputeAdvancedStats() {
 	if len(s.Students) == 0 {
-		fmt.Printf("%s❌ No data available for statistics.%s\n", colors.Red, colors.Reset)
+		colors.Error("No data available for statistics.")
 		return
 	}
 

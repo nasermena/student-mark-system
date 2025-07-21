@@ -62,7 +62,7 @@ func (m *Menu) Show() {
 			m.Store.GradeOverview()
 		case "9":
 			if len(m.Store.Students) == 0 {
-				fmt.Printf("❌%sNo data to export%s\n", colors.Red, colors.Reset)
+				colors.Error("No data to export")
 			} else {
 				fmt.Print("Enter filename to export as CSV: ")
 				scanner.Scan()
@@ -71,7 +71,7 @@ func (m *Menu) Show() {
 			}
 		case "10":
 			if len(m.Store.Students) == 0 {
-				fmt.Printf("❌%s No data to export.%s\n", colors.Red, colors.Reset)
+				colors.Error("No data to export")
 			} else {
 				fmt.Print("Enter filename to export as JSON: ")
 				scanner.Scan()
@@ -82,7 +82,7 @@ func (m *Menu) Show() {
 			fmt.Println("Exiting...")
 			return
 		default:
-			fmt.Printf("%sInvalid option. Try again.%s\n", colors.Red, colors.Reset)
+			colors.Error("Invalid option. Try again.")
 		}
 	}
 }

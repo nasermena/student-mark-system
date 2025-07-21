@@ -15,7 +15,7 @@ import (
 func (s *StudentManager) ImportFromFile(filename string) {
 	file, err := os.Open(filename)
 	if err != nil {
-		fmt.Printf("❌ %sFailed to open file: %v%s\n", colors.Red, err, colors.Reset)
+		colors.Error(fmt.Sprintf("Failed to open file: %v", err))
 		return
 	}
 	defer file.Close()
@@ -34,7 +34,7 @@ func (s *StudentManager) ImportFromFile(filename string) {
 
 		parts := strings.Split(line, ",")
 		if len(parts) != 2 || parts[0] == "" || !ValidateName(parts[0]) {
-			fmt.Printf("⚠️ %sLine %d ignored (invalid format): %s%s\n", colors.Yellow, lineNumber, line, colors.Reset)
+			colors.Warning(fmt.Sprintf("Line %d ignored (invalid format): %s\n", lineNumber, line))
 			skipped++
 			lineNumber++
 			continue
@@ -44,7 +44,7 @@ func (s *StudentManager) ImportFromFile(filename string) {
 		markStr := strings.TrimSpace(parts[1])
 		mark, err := strconv.Atoi(markStr)
 		if err != nil {
-			fmt.Printf("⚠️ %sLine %d ignored (invalid mark): %s%s\n", colors.Yellow, lineNumber, markStr, colors.Reset)
+			colors.Warning(fmt.Sprintf("Line %d ignored (invalid mark): %s\n", lineNumber, markStr))
 			skipped++
 			lineNumber++
 			continue
@@ -52,14 +52,14 @@ func (s *StudentManager) ImportFromFile(filename string) {
 
 		validMark, err := ValidateMark(mark)
 		if err != nil {
-			fmt.Printf("⚠️ %sLine %d ignored (mark out of range): %d%s\n", colors.Yellow, lineNumber, mark, colors.Reset)
+			colors.Warning(fmt.Sprintf("Line %d ignored (mark out of range): %d\n", lineNumber, mark))
 			skipped++
 			lineNumber++
 			continue
 		}
 
 		if _, exists := s.Students[name]; exists {
-			fmt.Printf("⚠️ %s%s already exists. Skipping.%s\n", colors.Yellow, name, colors.Reset)
+			colors.Warning(fmt.Sprintf("%s already exists. Skipping.\n", name))
 			skipped++
 		} else {
 			s.Students[name] = Student{Name: name, Mark: validMark}
@@ -69,18 +69,17 @@ func (s *StudentManager) ImportFromFile(filename string) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("❌ %sError reading file: %v%s\n", colors.Red, err, colors.Reset)
+		colors.Error(fmt.Sprintf("Error reading file: %v", err))
 		return
 	}
-
-	fmt.Printf("✅ %sImport complete. %d added, %d skipped.%s\n", colors.Green, added, skipped, colors.Reset)
+	colors.Success(fmt.Sprintf("Import complete. %d added, %d skipped.", added, skipped))
 }
 
 func (s *StudentManager) ExportToCSV(filename string) {
 	fullPath := fmt.Sprintf("data/%s.csv", filename)
 	file, err := os.Create(fullPath)
 	if err != nil {
-		fmt.Printf("%s❌ Could not create file: %v%s\n", colors.Red, err, colors.Reset)
+		colors.Error(fmt.Sprintf("Could not create file: %v", err))
 		return
 	}
 	defer file.Close()
@@ -92,18 +91,18 @@ func (s *StudentManager) ExportToCSV(filename string) {
 	for _, student := range s.Students {
 		record := []string{student.Name, fmt.Sprintf("%d", student.Mark)}
 		if err := writer.Write(record); err != nil {
-			fmt.Printf("%s❌ Failed to write record: %v%s\n", colors.Red, err, colors.Reset)
+			colors.Error(fmt.Sprintf("Failed to write record: %v", err))
 		}
 	}
 
-	fmt.Printf("%s✅ Exported %d students to CSV file: %s%s\n", colors.Green, len(s.Students), filename, colors.Reset)
+	colors.Success(fmt.Sprintf("Exported %d students to CSV file: %s", len(s.Students), filename))
 }
 
 func (s *StudentManager) ExportToJSON(filename string) {
 	fullPath := fmt.Sprintf("data/%s.json", filename) // انتبه: الامتداد يجب أن يكون .json
 	file, err := os.Create(fullPath)
 	if err != nil {
-		fmt.Printf("%s❌ Could not create file: %v%s\n", colors.Red, err, colors.Reset)
+		colors.Error(fmt.Sprintf("Could not create file: %v", err))
 		return
 	}
 	defer file.Close()
@@ -117,9 +116,9 @@ func (s *StudentManager) ExportToJSON(filename string) {
 	}
 
 	if err := encoder.Encode(exportData); err != nil {
-		fmt.Printf("%s❌ Failed to encode JSON: %v%s\n", colors.Red, err, colors.Reset)
+		colors.Error(fmt.Sprintf("Failed to encode JSON: %v", err))
 		return
 	}
 
-	fmt.Printf("%s✅ Exported %d students to JSON file: %s%s\n", colors.Green, len(s.Students), filename, colors.Reset)
+	colors.Success(fmt.Sprintf("Exported %d students to JSON file: %s", len(s.Students), filename))
 }
