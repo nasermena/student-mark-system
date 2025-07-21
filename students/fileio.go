@@ -1,20 +1,18 @@
-package data
+package students
 
 import (
-	"fmt"
-	"os"
 	"bufio"
-	"strings"
-	"strconv"
-	"student-mark-system/students"
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
 	"student-mark-system/colors"
-	
 )
 
-
-func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
+func (s *StudentManager) ImportFromFile(filename string) {
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Printf("❌ %sFailed to open file: %v%s\n", colors.Red, err, colors.Reset)
@@ -35,8 +33,7 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 		}
 
 		parts := strings.Split(line, ",")
-
-		if len(parts) != 2 || parts[0] == "" || !students.ValidateName(parts[0]) {
+		if len(parts) != 2 || parts[0] == "" || !ValidateName(parts[0]) {
 			fmt.Printf("⚠️ %sLine %d ignored (invalid format): %s%s\n", colors.Yellow, lineNumber, line, colors.Reset)
 			skipped++
 			lineNumber++
@@ -53,7 +50,7 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 			continue
 		}
 
-		validMark, err := students.ValidateMark(mark)
+		validMark, err := ValidateMark(mark)
 		if err != nil {
 			fmt.Printf("⚠️ %sLine %d ignored (mark out of range): %d%s\n", colors.Yellow, lineNumber, mark, colors.Reset)
 			skipped++
@@ -61,58 +58,50 @@ func ImportStudentsFromFile(filename string, studentMarks map[string]int) {
 			continue
 		}
 
-		if _, exists := studentMarks[name]; exists {
+		if _, exists := s.Students[name]; exists {
 			fmt.Printf("⚠️ %s%s already exists. Skipping.%s\n", colors.Yellow, name, colors.Reset)
 			skipped++
 		} else {
-			studentMarks[name] = validMark
+			s.Students[name] = Student{Name: name, Mark: validMark}
 			added++
 		}
-
 		lineNumber++
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Printf("❌ %sError reading file: %v%s\n", err, colors.Red, colors.Reset)
+		fmt.Printf("❌ %sError reading file: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 
 	fmt.Printf("✅ %sImport complete. %d added, %d skipped.%s\n", colors.Green, added, skipped, colors.Reset)
 }
 
-// ExportToCSV writes the student marks to a CSV file
-func ExportToCSV(filename string, studentMarks map[string]int) {
-
-
+func (s *StudentManager) ExportToCSV(filename string) {
 	fullPath := fmt.Sprintf("data/%s.csv", filename)
 	file, err := os.Create(fullPath)
-
 	if err != nil {
 		fmt.Printf("%s❌ Could not create file: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 	defer file.Close()
+
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// Write header
 	writer.Write([]string{"Name", "Mark"})
-
-	for name, mark := range studentMarks {
-		record := []string{name, fmt.Sprintf("%d", mark)}
+	for _, student := range s.Students {
+		record := []string{student.Name, fmt.Sprintf("%d", student.Mark)}
 		if err := writer.Write(record); err != nil {
 			fmt.Printf("%s❌ Failed to write record: %v%s\n", colors.Red, err, colors.Reset)
 		}
 	}
 
-	fmt.Printf("%s✅ Exported %d students to CSV file: %s%s\n", colors.Green, len(studentMarks), filename, colors.Reset)
+	fmt.Printf("%s✅ Exported %d students to CSV file: %s%s\n", colors.Green, len(s.Students), filename, colors.Reset)
 }
 
-// ExportToJSON writes the student marks to a JSON file
-func ExportToJSON(filename string, studentMarks map[string]int) {
-	fullPath := fmt.Sprintf("data/%s.csv", filename)
+func (s *StudentManager) ExportToJSON(filename string) {
+	fullPath := fmt.Sprintf("data/%s.json", filename) // انتبه: الامتداد يجب أن يكون .json
 	file, err := os.Create(fullPath)
-
 	if err != nil {
 		fmt.Printf("%s❌ Could not create file: %v%s\n", colors.Red, err, colors.Reset)
 		return
@@ -122,10 +111,15 @@ func ExportToJSON(filename string, studentMarks map[string]int) {
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")
 
-	if err := encoder.Encode(studentMarks); err != nil {
+	exportData := make(map[string]int)
+	for name, student := range s.Students {
+		exportData[name] = student.Mark
+	}
+
+	if err := encoder.Encode(exportData); err != nil {
 		fmt.Printf("%s❌ Failed to encode JSON: %v%s\n", colors.Red, err, colors.Reset)
 		return
 	}
 
-	fmt.Printf("%s✅ Exported %d students to JSON file: %s%s\n", colors.Green, len(studentMarks), filename, colors.Reset)
+	fmt.Printf("%s✅ Exported %d students to JSON file: %s%s\n", colors.Green, len(s.Students), filename, colors.Reset)
 }

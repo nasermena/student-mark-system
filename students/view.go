@@ -7,13 +7,13 @@ import (
 	"math"
 )
 
-func ShowStudents(studentMarks map[string]int){
-	if len(studentMarks) == 0{
+func (s *StudentManager) ShowAll(){
+	if len(s.Students) == 0{
 		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
 		return
 	}
 		keys := []string{}
-		for k := range studentMarks {
+		for k := range s.Students {
 			keys = append(keys, k)
 		}
 		
@@ -21,14 +21,14 @@ func ShowStudents(studentMarks map[string]int){
 		fmt.Println(strings.Repeat("=", 40))
 		fmt.Printf("%s🎓 Students list:%s\n", colors.Cyan, colors.Reset)
 		for _, name:= range keys{
-			fmt.Printf("👨‍🎓 %-12s : %d\n", name, studentMarks[name])
+			fmt.Printf("👨‍🎓 %-12s : %d\n", name, s.Students[name].Mark)
 		}
 		
 		fmt.Println(strings.Repeat("=", 40))
 	}
 
-func PrintSummary(studentMarks map[string]int) {
-	if len(studentMarks) == 0 {
+func (s *StudentManager) PrintSummary() {
+	if len(s.Students) == 0 {
 		fmt.Printf("❌ %sNo students to summarize.%s\n", colors.Red, colors.Reset)
 		return
 	}
@@ -42,7 +42,8 @@ func PrintSummary(studentMarks map[string]int) {
 		passCount   int
 	)
 
-	for name, mark := range studentMarks {
+	for name, student := range s.Students {
+		mark := student.Mark
 		total += mark
 
 		if mark > maxMark {
@@ -64,13 +65,13 @@ func PrintSummary(studentMarks map[string]int) {
 		}
 	}
 
-	avg := float64(total) / float64(len(studentMarks))
-	failCount := len(studentMarks) - passCount
+	avg := float64(total) / float64(len(s.Students))
+	failCount := len(s.Students) - passCount
 
 	fmt.Println(strings.Repeat("=", 40))
 	fmt.Printf("%s📊 Students Summary Report%s\n", colors.Cyan, colors.Reset)
 	fmt.Println(strings.Repeat("-", 40))
-	fmt.Printf("👥 Total students: %d\n", len(studentMarks))
+	fmt.Printf("👥 Total students: %d\n", len(s.Students))
 	fmt.Printf("🎯 Highest mark: %d by %v\n", maxMark, topStudents)
 	fmt.Printf("❗ Lowest mark: %d by %v\n", minMark, lowStudents)
 	fmt.Printf("📈 Average mark: %.2f\n", avg)
@@ -78,14 +79,12 @@ func PrintSummary(studentMarks map[string]int) {
 	fmt.Printf("❌ Failed: %d student(s)\n", failCount)
 	fmt.Println(strings.Repeat("-", 40))
 	fmt.Printf("%s📊 Advanced Statistics:%s\n", colors.Cyan, colors.Reset)
-	ComputeAdvancedStats(studentMarks)
+	s.ComputeAdvancedStats()
 	fmt.Println(strings.Repeat("=", 40))
-
 }
 
-
-func GradeOverview(studentMarks map[string]int) {
-	if len(studentMarks) == 0 {
+func (s *StudentManager) GradeOverview() {
+	if len(s.Students) == 0 {
 		fmt.Printf("%s❌ No student marks available.%s\n", colors.Red, colors.Reset)
 		return
 	}
@@ -105,7 +104,8 @@ func GradeOverview(studentMarks map[string]int) {
 	fmt.Printf("📄%s Grade Classification per Student:%s\n", colors.Cyan, colors.Reset)
 	fmt.Println(strings.Repeat("-", 40))
 
-	for name, mark := range studentMarks {
+	for name, student := range s.Students {
+		mark := student.Mark
 		var grade string
 		switch {
 		case mark >= 90:
@@ -122,7 +122,7 @@ func GradeOverview(studentMarks map[string]int) {
 			grade = "F (0-49) ❌"
 		}
 
-		distribution[grade]++ 
+		distribution[grade]++
 		fmt.Printf("👨‍🎓 %-15s → %3d (%s)\n", name, mark, grade)
 	}
 
@@ -147,15 +147,15 @@ func GradeOverview(studentMarks map[string]int) {
 }
 
 // ComputeAdvancedStats calculates and displays advanced statistical metrics
-func ComputeAdvancedStats(studentMarks map[string]int) {
-	if len(studentMarks) == 0 {
+func (s *StudentManager) ComputeAdvancedStats() {
+	if len(s.Students) == 0 {
 		fmt.Printf("%s❌ No data available for statistics.%s\n", colors.Red, colors.Reset)
 		return
 	}
 
 	var marks []int
-	for _, mark := range studentMarks {
-		marks = append(marks, mark)
+	for _, student := range s.Students {
+		marks = append(marks, student.Mark)
 	}
 
 	sort.Ints(marks)

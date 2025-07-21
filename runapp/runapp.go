@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"student-mark-system/data"
 	"student-mark-system/students"
     "student-mark-system/colors"
 )
 
 func MainMenu(){
-
-    studentMarks := make(map[string]int)
+    
+    store := students.NewStudentManager()
 
     for {
         scanner := bufio.NewScanner(os.Stdin)        
@@ -22,43 +21,43 @@ func MainMenu(){
         option := scanner.Text() 
         switch option {
         case "1":			
-           students.ShowStudents(studentMarks)
+           store.ShowAll()
         case "2":
             scanner := bufio.NewScanner(os.Stdin)
             fmt.Print("Enter File Name: ")
             scanner.Scan()
             filename := strings.TrimSpace(scanner.Text())
-	        data.ImportStudentsFromFile(filename, studentMarks)
+            store.ImportFromFile(filename)
         case "3":
-            students.AddStudent(studentMarks)
+            store.AddInteractive()
         case "4":
-           students.SearchStudent(studentMarks)
+            store.SearchInteractive()
         case "5":
-            students.DeleteStudent(studentMarks)
+            store.DeleteInteractive()
         case "6":
-            students.EditStudentMark(studentMarks)
+            store.EditMarkInteractive()
         case "7":
-            students.PrintSummary(studentMarks)
+            store.PrintSummary()
         case "8":
-            students.GradeOverview(studentMarks)
+            store.GradeOverview()
         case "9":
-            if len(studentMarks) == 0 {
+            if len(store.Students) == 0 {
                 fmt.Printf("❌%sNo data to export%s\n", colors.Red, colors.Reset)
             }else {
                 fmt.Print("Enter filename to export as CSV: ")
                 scanner.Scan()
                 filename := strings.TrimSpace(scanner.Text())
-                data.ExportToCSV(filename, studentMarks)
+                store.ExportToCSV(filename)
                 return
             }
         case "10":
-            if len(studentMarks) == 0 {
+            if len(store.Students) == 0 {
                 fmt.Printf("❌%s No data to export.%s\n", colors.Red, colors.Reset)
             }else {
                 fmt.Print("Enter filename to export as JSON: ")
                 scanner.Scan()
                 filename := strings.TrimSpace(scanner.Text())
-                data.ExportToJSON(filename, studentMarks)
+                store.ExportToJSON(filename)
                 return
             }
         case "11":

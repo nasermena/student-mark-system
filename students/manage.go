@@ -9,7 +9,7 @@ import (
 	"student-mark-system/colors"
 )
 
-func AddStudent(studentMarks map[string]int) {
+func (s *StudentManager) AddInteractive() {
 	scanner := bufio.NewScanner(os.Stdin)
 	
 	fmt.Printf("%s📥 Enter students as: Name/Grade (Type '0' to exit)%s\n", colors.Cyan, colors.Reset)
@@ -44,19 +44,19 @@ func AddStudent(studentMarks map[string]int) {
 			continue
 		}
 
-		if _, exists := studentMarks[name]; exists {
+		if _, exists := s.Students[name]; exists {
 			fmt.Printf("%s⚠️ %s already exists. Skipping.%s\n", colors.Yellow, name, colors.Reset)
 			continue
 		}
 
-		studentMarks[name] = validMark
+		s.Students[name] = Student{Name: name, Mark: validMark}
 		fmt.Printf("%s✅ %s was added successfully.%s\n", colors.Green, name, colors.Reset)
 		counter++
 	}
 }
 
-func SearchStudent(studentMarks map[string]int){
-	if len(studentMarks) == 0{
+func (s *StudentManager) SearchInteractive(){
+	if len(s.Students) == 0{
 		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
 		return
 	}
@@ -65,16 +65,16 @@ func SearchStudent(studentMarks map[string]int){
 	scanner.Scan()
 	searchName := strings.TrimSpace(scanner.Text())
 	
-	mark, exists := studentMarks[searchName]
+	student, exists := s.Students[searchName]
 	if exists{
-		fmt.Printf("%s✅ Found! %s got %d.%s\n", colors.Green, searchName, mark, colors.Reset)
+		fmt.Printf("%s✅ Found! %s got %d.%s\n", colors.Green, searchName, student.Mark, colors.Reset)
 		}else{
 			fmt.Printf("%s❌ %s not found.%s\n", colors.Red, searchName, colors.Reset)
 		}
 	}
 
-func DeleteStudent(studentMarks map[string]int) {
-	if len(studentMarks) == 0{
+func (s *StudentManager) DeleteInteractive(){
+	if len(s.Students) == 0{
 		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
 		return
 	}
@@ -83,12 +83,12 @@ func DeleteStudent(studentMarks map[string]int) {
 	scanner.Scan()
 	searchName := strings.TrimSpace(scanner.Text())
 
-	if _, exists := studentMarks[searchName]; exists {
+	if _, exists := s.Students[searchName]; exists {
 		fmt.Printf("⚠️ Are you sure you want to delete %s? (y/n): ", searchName)
 		scanner.Scan()
 		confirm := strings.ToLower(strings.TrimSpace(scanner.Text()))
 		if confirm == "y" {
-			delete(studentMarks, searchName)
+			delete(s.Students, searchName)
 			fmt.Printf("%s✅ %s was deleted successfully.%s\n", colors.Green, searchName, colors.Reset)
 		} else {
 			fmt.Printf("%sℹ️ Operation canceled.%s\n", colors.Yellow, colors.Reset)
@@ -98,8 +98,8 @@ func DeleteStudent(studentMarks map[string]int) {
 	}
 }
 
-func EditStudentMark(studentMarks map[string]int) {
-	if len(studentMarks) == 0{
+func (s *StudentManager) EditMarkInteractive(){
+	if len(s.Students) == 0{
 		fmt.Printf("%s❌ Students list is empty.%s\n", colors.Red, colors.Reset)
 		return
 	}
@@ -110,13 +110,13 @@ func EditStudentMark(studentMarks map[string]int) {
 	scanner.Scan()
 	name := strings.TrimSpace(scanner.Text())
 
-	oldMark, exists := studentMarks[name]
+	studentOldMark, exists := s.Students[name]
 	if !exists {
 		fmt.Printf("%s❌ %s not found.%s\n", colors.Red, name, colors.Reset)
 		return
 	}
 
-	fmt.Printf("%s✏️  Current mark for %s is: %d%s\n", colors.Blue, name, oldMark, colors.Reset)
+	fmt.Printf("%s✏️  Current mark for %s is: %d%s\n", colors.Blue, name, studentOldMark.Mark, colors.Reset)
 
 	fmt.Print("⚠️  Are you sure you want to update the mark? (y/n): ")
 	scanner.Scan()
@@ -142,8 +142,8 @@ func EditStudentMark(studentMarks map[string]int) {
 			fmt.Printf("%s🔢 Invalid range. Enter a number between 1-100.%s\n", colors.Red, colors.Reset)
 			continue
 		}
-
-		studentMarks[name] = validMark
+		
+		s.Students[name] = Student{Name: name, Mark: validMark}
 		fmt.Printf("%s✅ %s's mark has been updated successfully to %d.%s\n", colors.Green, name, validMark, colors.Reset)
 		break
 	}
